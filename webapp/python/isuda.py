@@ -302,8 +302,8 @@ def get_stars(keyword):
 
 
 def load_stars(keyword):
-    data = get_stars(keyword)
-    data = json.loads(data)
+    res = get_stars(keyword)
+    data = json.loads(res.read().decode('utf-8'))
     return data['stars']
 
     origin = config('isutar_origin')
