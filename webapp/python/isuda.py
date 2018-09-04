@@ -300,20 +300,21 @@ def get_stars(keyword):
     cur.execute('SELECT * FROM star WHERE keyword = %s', (keyword, ))
     res = cur.fetchall()
     return res
-    # return jsonify(stars=cur.fetchall())
 
 
 def load_stars(keyword):
-    return get_stars(keyword)
-    # data = json.loads(res.read().decode('utf-8'))
-    # return data['stars']
+    cur = dbh_isutar().cursor()
+    app.logger.critical('keyword = ' + keyword)
+    cur.execute('SELECT * FROM star WHERE keyword = %s', (keyword, ))
+    res = cur.fetchall()
+    return res
 
-    origin = config('isutar_origin')
-    url = "%s/stars" % origin
-    params = urllib.parse.urlencode({'keyword': keyword})
-    with urllib.request.urlopen(url + "?%s" % params) as res:
-        data = json.loads(res.read().decode('utf-8'))
-        return data['stars']
+    # origin = config('isutar_origin')
+    # url = "%s/stars" % origin
+    # params = urllib.parse.urlencode({'keyword': keyword})
+    # with urllib.request.urlopen(url + "?%s" % params) as res:
+    #     data = json.loads(res.read().decode('utf-8'))
+    #     return data['stars']
 
 
 def is_spam_contents(content):
