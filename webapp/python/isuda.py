@@ -160,6 +160,7 @@ def get_robot_txt():
 @set_name
 @authenticate
 def create_keyword():
+    global keywords_cache
     keyword = request.form['keyword']
     if keyword is None or len(keyword) == 0:
         abort(400)
@@ -259,6 +260,7 @@ def get_keyword(keyword):
 @set_name
 @authenticate
 def delete_keyword(keyword):
+    global keywords_cache
     if keyword == '':
         abort(400)
     if keywords_cache is not None and keyword in keywords_cache:
