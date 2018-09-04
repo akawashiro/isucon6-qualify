@@ -10,6 +10,7 @@ import random
 import re
 import string
 import urllib
+import logging
 # import sys
 
 static_folder = pathlib.Path(__file__).resolve().parent.parent / 'public'
@@ -289,4 +290,8 @@ def is_spam_contents(content):
 
 if __name__ == "__main__":
     app.logger.critical('this is a CRITICAL message')
+
+    LOGGER = logging.getLogger('gunicorn.error')
+    LOGGER.info('my info')
+    LOGGER.debug('debug message')
     app.run()
