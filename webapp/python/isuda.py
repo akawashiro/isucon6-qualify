@@ -343,17 +343,17 @@ def get_stars(keyword):
 
 
 def load_stars(keyword):
-    cur = dbh_isutar().cursor()
-    cur.execute('SELECT * FROM star WHERE keyword = %s', (keyword, ))
-    res = cur.fetchall()
-    return res
-
-    # origin = config('isutar_origin')
-    # url = "%s/stars" % origin
-    # params = urllib.parse.urlencode({'keyword': keyword})
-    # with urllib.request.urlopen(url + "?%s" % params) as res:
-    #     data = json.loads(res.read().decode('utf-8'))
-    #     return data['stars']
+    # cur = dbh_isutar().cursor()
+    # cur.execute('SELECT * FROM star WHERE keyword = %s', (keyword, ))
+    # res = cur.fetchall()
+    # return res
+    #
+    origin = config('isutar_origin')
+    url = "%s/stars" % origin
+    params = urllib.parse.urlencode({'keyword': keyword})
+    with urllib.request.urlopen(url + "?%s" % params) as res:
+        data = json.loads(res.read().decode('utf-8'))
+        return data['stars']
 
 
 def is_spam_contents(content):
