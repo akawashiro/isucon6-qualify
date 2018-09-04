@@ -10,16 +10,18 @@ import random
 import re
 import string
 import urllib
-# import sys
-from werkzeug.contrib.profiler import ProfilerMiddleware
+import sys
+from werkzeug.contrib.profiler import ProfilerMiddleware, MergeStream
 
 static_folder = pathlib.Path(__file__).resolve().parent.parent / 'public'
 app = Flask(__name__, static_folder=str(static_folder), static_url_path='')
 
 app.secret_key = 'tonymoris'
 
+f = open('/home/isucon/profiler.log', 'w')
+stream = MergeStream(sys.stdout, f)
 app.config['PROFILE'] = True
-app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
+app.wsgi_app = ProfilerMiddleware(app.wsgi_app, stream)
 
 
 keywords_cache = None
