@@ -286,6 +286,7 @@ def make_keyword_list():
     cur.execute('SELECT keyword FROM entry ORDER BY CHARACTER_LENGTH(keyword) DESC')
     keywords = list()
     for k in cur.fetchall():
+        app.logger.critical('k = ' + str(k))
         keywords.append(k['keyword'])
     keywords_cache = set(keywords)
     return keywords
