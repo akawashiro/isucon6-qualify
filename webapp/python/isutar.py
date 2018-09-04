@@ -1,12 +1,13 @@
 from flask import Flask, request, jsonify, abort
 import MySQLdb.cursors
 import os
-import html
+# import html
 import urllib
 
 app = Flask(__name__)
 
-def dbh():
+
+def dbh_isutar():
     if hasattr(request, 'db'):
         return request.db
     else:
@@ -25,27 +26,31 @@ def dbh():
         cur.execute('SET NAMES utf8mb4')
         return request.db
 
+
 @app.teardown_request
 def close_db(exception=None):
     if hasattr(request, 'db'):
         request.db.close()
 
+
 @app.route("/initialize")
 def get_initialize():
-    cur = dbh().cursor()
+    cur = dbh_isutar().cursor()
     cur.execute('TRUNCATE star')
-    return jsonify(status = 'ok')
+    return jsonify(status='ok')
+
 
 @app.route("/stars")
 def get_stars():
-    cur = dbh().cursor()
+    cur = dbh_isutar().cursor()
     cur.execute('SELECT * FROM star WHERE keyword = %s', (request.args['keyword'], ))
-    return jsonify(stars = cur.fetchall())
+    return jsonify(stars=cur.fetchall())
+
 
 @app.route("/stars", methods=['POST'])
 def post_stars():
     keyword = request.args.get('keyword', "")
-    if keyword == None or keyword == "":
+    if keyword is None or keyword == "":
         keyword = request.form['keyword']
 
     origin = os.environ.get('ISUDA_ORIGIN', 'http://localhost:5000')
@@ -58,14 +63,15 @@ def post_stars():
         else:
             raise
 
-    cur = dbh().cursor()
+    cur = dbh_isutar().cursor()
     user = request.args.get('user', "")
-    if user == None or user == "":
+    if user is None or user == "":
         user = request.form['user']
 
     cur.execute('INSERT INTO star (keyword, user_name, created_at) VALUES (%s, %s, NOW())', (keyword, user))
 
-    return jsonify(result = 'ok')
+    return jsonify(result='ok')
+
 
 if __name__ == "__main__":
     app.run()
