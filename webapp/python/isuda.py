@@ -304,7 +304,7 @@ def get_stars(keyword):
 
 def load_stars(keyword):
     cur = dbh_isutar().cursor()
-    app.logger.critical('keyword = ' + keyword)
+    # app.logger.critical('keyword = ' + keyword)
     cur.execute('SELECT * FROM star WHERE keyword = %s', (keyword, ))
     res = cur.fetchall()
     return res
