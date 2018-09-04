@@ -10,7 +10,7 @@ import random
 import re
 import string
 import urllib
-import sys
+# import sys
 
 static_folder = pathlib.Path(__file__).resolve().parent.parent / 'public'
 app = Flask(__name__, static_folder=str(static_folder), static_url_path='')
@@ -288,5 +288,6 @@ def is_spam_contents(content):
 
 
 if __name__ == "__main__":
-    print("Init isuda.", file=sys.stderr)
+    with open('/home/isucon/isuda-out.txt', mode='a') as f:
+        print("Init isuda.", file=f)
     app.run()
