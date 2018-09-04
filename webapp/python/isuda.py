@@ -21,7 +21,7 @@ app.secret_key = 'tonymoris'
 f = open('/home/isucon/profiler.log', 'w')
 stream = MergeStream(sys.stdout, f)
 app.config['PROFILE'] = True
-app.wsgi_app = ProfilerMiddleware(app.wsgi_app, stream)
+app.wsgi_app = ProfilerMiddleware(app.wsgi_app, stream, sort_by=['times'])
 
 
 keywords_cache = None
