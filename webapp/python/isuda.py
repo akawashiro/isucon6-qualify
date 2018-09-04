@@ -280,13 +280,12 @@ def delete_keyword(keyword):
 def make_keyword_list():
     global keywords_cache
     if keywords_cache is not None:
-        return list(keywords_cache).sort(key=lambda x: len(x))
+        return list(keywords_cache)
 
     cur = dbh_isuda().cursor()
     cur.execute('SELECT keyword FROM entry ORDER BY CHARACTER_LENGTH(keyword) DESC')
     keywords = list()
     for k in cur.fetchall():
-        app.logger.critical('k = ' + str(k))
         keywords.append(k['keyword'])
     keywords_cache = set(keywords)
     return keywords
