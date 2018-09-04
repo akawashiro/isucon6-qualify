@@ -296,6 +296,7 @@ def htmlify(content):
 
 def get_stars(keyword):
     cur = dbh_isutar().cursor()
+    app.logger.critical('keyword = ' + keyword)
     cur.execute('SELECT * FROM star WHERE keyword = %s', (keyword, ))
     return jsonify(stars=cur.fetchall())
 
