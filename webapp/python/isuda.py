@@ -10,7 +10,6 @@ import random
 import re
 import string
 import urllib
-import logging
 # import sys
 
 static_folder = pathlib.Path(__file__).resolve().parent.parent / 'public'
@@ -20,15 +19,6 @@ app.secret_key = 'tonymoris'
 
 
 app.logger.critical('this is a CRITICAL message')
-
-LOGGER = logging.getLogger('gunicorn.error')
-LOGGER.info('my info')
-LOGGER.debug('debug message')
-
-gunicorn_error_logger = logging.getLogger('gunicorn.error')
-app.logger.handlers.extend(gunicorn_error_logger.handlers)
-app.logger.setLevel(logging.DEBUG)
-app.logger.debug('this will show in the log')
 
 
 _config = {
@@ -48,7 +38,7 @@ def config(key):
         raise "config value of %s undefined" % key
 
 
-def dbh():
+def dbh_isuda():
     if hasattr(request, 'db'):
         return request.db
     else:
@@ -86,7 +76,7 @@ def set_name(func):
     def wrapper(*args, **kwargs):
         if "user_id" in session:
             request.user_id = user_id = session['user_id']
-            cur = dbh().cursor()
+            cur = dbh_isuda().cursor()
             cur.execute('SELECT name FROM user WHERE id = %s', (user_id, ))
             user = cur.fetchone()
             if user is None:
@@ -111,7 +101,7 @@ def authenticate(func):
 
 @app.route('/initialize')
 def get_initialize():
-    cur = dbh().cursor()
+    cur = dbh_isuda().cursor()
     cur.execute('DELETE FROM entry WHERE id > 7101')
     origin = config('isutar_origin')
     urllib.request.urlopen(origin + '/initialize')
@@ -124,7 +114,7 @@ def get_index():
     PER_PAGE = 10
     page = int(request.args.get('page', '1'))
 
-    cur = dbh().cursor()
+    cur = dbh_isuda().cursor()
     cur.execute('SELECT * FROM entry ORDER BY updated_at DESC LIMIT %s OFFSET %s', (PER_PAGE, PER_PAGE * (page - 1),))
     entries = cur.fetchall()
     for entry in entries:
@@ -159,7 +149,7 @@ def create_keyword():
     if is_spam_contents(description) or is_spam_contents(keyword):
         abort(400)
 
-    cur = dbh().cursor()
+    cur = dbh_isuda().cursor()
     sql = """
         INSERT INTO entry (author_id, keyword, description, created_at, updated_at)
         VALUES (%s,%s,%s,NOW(), NOW())
@@ -183,7 +173,7 @@ def post_register():
     if name is None or name == '' or pw is None or pw == '':
         abort(400)
 
-    user_id = register(dbh().cursor(), name, pw)
+    user_id = register(dbh_isuda().cursor(), name, pw)
     session['user_id'] = user_id
     return redirect('/')
 
@@ -209,7 +199,7 @@ def get_login():
 @app.route('/login', methods=['POST'])
 def post_login():
     name = request.form['name']
-    cur = dbh().cursor()
+    cur = dbh_isuda().cursor()
     cur.execute("SELECT * FROM user WHERE name = %s", (name, ))
     row = cur.fetchone()
     if row is None or row['password'] != hashlib.sha1((row['salt'] + request.form['password']).encode('utf-8')).hexdigest():
@@ -231,7 +221,7 @@ def get_keyword(keyword):
     if keyword == '':
         abort(400)
 
-    cur = dbh().cursor()
+    cur = dbh_isuda().cursor()
     cur.execute('SELECT * FROM entry WHERE keyword = %s', (keyword,))
     entry = cur.fetchone()
     if entry is None:
@@ -249,7 +239,7 @@ def delete_keyword(keyword):
     if keyword == '':
         abort(400)
 
-    cur = dbh().cursor()
+    cur = dbh_isuda().cursor()
     cur.execute('SELECT * FROM entry WHERE keyword = %s', (keyword, ))
     row = cur.fetchone()
     if row is None:
@@ -264,7 +254,7 @@ def htmlify(content):
     if content is None or content == '':
         return ''
 
-    cur = dbh().cursor()
+    cur = dbh_isuda().cursor()
     cur.execute('SELECT * FROM entry ORDER BY CHARACTER_LENGTH(keyword) DESC')
     keywords = cur.fetchall()
     keyword_re = re.compile("(%s)" % '|'.join([re.escape(k['keyword']) for k in keywords]))
