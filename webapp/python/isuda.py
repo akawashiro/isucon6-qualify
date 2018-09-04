@@ -11,11 +11,17 @@ import re
 import string
 import urllib
 # import sys
+from werkzeug.contrib.profiler import ProfilerMiddleware
 
 static_folder = pathlib.Path(__file__).resolve().parent.parent / 'public'
 app = Flask(__name__, static_folder=str(static_folder), static_url_path='')
 
 app.secret_key = 'tonymoris'
+
+app.config['PROFILE'] = True
+app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
+
+
 keywords_cache = None
 keyword_re_cache = None
 
@@ -347,7 +353,7 @@ def load_stars(keyword):
     # cur.execute('SELECT * FROM star WHERE keyword = %s', (keyword, ))
     # res = cur.fetchall()
     # return res
-    #
+
     origin = config('isutar_origin')
     url = "%s/stars" % origin
     params = urllib.parse.urlencode({'keyword': keyword})
