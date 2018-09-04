@@ -163,7 +163,8 @@ def create_keyword():
     keyword = request.form['keyword']
     if keyword is None or len(keyword) == 0:
         abort(400)
-    keywords_cache.add(keyword)
+    if keywords_cache is not None:
+        keywords_cache.add(keyword)
 
     user_id = request.user_id
     description = request.form['description']
@@ -260,7 +261,7 @@ def get_keyword(keyword):
 def delete_keyword(keyword):
     if keyword == '':
         abort(400)
-    if keyword in keywords_cache:
+    if keywords_cache is not None and keyword in keywords_cache:
         keywords_cache.remove(keyword)
 
     cur = dbh_isuda().cursor()
