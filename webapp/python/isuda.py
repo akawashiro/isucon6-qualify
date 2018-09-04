@@ -39,10 +39,10 @@ def config(key):
 
 
 def dbh_isuda():
-    if hasattr(request, 'db'):
-        return request.db
+    if hasattr(request, 'isuda_db'):
+        return request.isuda_db
     else:
-        request.db = MySQLdb.connect(**{
+        request.isuda_db = MySQLdb.connect(**{
             'host': config('db_host'),
             'port': config('db_port'),
             'user': config('db_user'),
@@ -52,17 +52,17 @@ def dbh_isuda():
             'cursorclass': MySQLdb.cursors.DictCursor,
             'autocommit': True,
         })
-        cur = request.db.cursor()
+        cur = request.isuda_db.cursor()
         cur.execute("SET SESSION sql_mode='TRADITIONAL,NO_AUTO_VALUE_ON_ZERO,ONLY_FULL_GROUP_BY'")
         cur.execute('SET NAMES utf8mb4')
-        return request.db
+        return request.isuda_db
 
 
 def dbh_isutar():
-    if hasattr(request, 'db'):
-        return request.db
+    if hasattr(request, 'isutar_db'):
+        return request.isutar_db
     else:
-        request.db = MySQLdb.connect(**{
+        request.isutar_db = MySQLdb.connect(**{
             'host': os.environ.get('ISUTAR_DB_HOST', 'localhost'),
             'port': int(os.environ.get('ISUTAR_DB_PORT', '3306')),
             'user': os.environ.get('ISUTAR_DB_USER', 'root'),
@@ -72,10 +72,10 @@ def dbh_isutar():
             'cursorclass': MySQLdb.cursors.DictCursor,
             'autocommit': True,
         })
-        cur = request.db.cursor()
+        cur = request.isutar_db.cursor()
         cur.execute("SET SESSION sql_mode='TRADITIONAL,NO_AUTO_VALUE_ON_ZERO,ONLY_FULL_GROUP_BY'")
         cur.execute('SET NAMES utf8mb4')
-        return request.db
+        return request.isutar_db
 
 
 @app.teardown_request
