@@ -17,6 +17,7 @@ app = Flask(__name__, static_folder=str(static_folder), static_url_path='')
 
 app.secret_key = 'tonymoris'
 keywords_cache = None
+keyword_re_cache = None
 
 
 # app.logger.critical('this is a CRITICAL message')
@@ -293,6 +294,14 @@ def make_keyword_list():
     return keywords
 
 
+def make_keyword_re(keywords):
+    global keyword_re_cache
+    if keyword_re_cache is not None:
+        return keyword_re_cache
+    keyword_re_cache = re.compile("(%s)" % '|'.join([re.escape(k) for k in keywords]))
+    return keyword_re_cache
+
+
 def htmlify(content):
     if content is None or content == '':
         return ''
@@ -301,7 +310,7 @@ def htmlify(content):
     # cur.execute('SELECT * FROM entry ORDER BY CHARACTER_LENGTH(keyword) DESC')
     # keywords = cur.fetchall()
     keywords = make_keyword_list()
-    keyword_re = re.compile("(%s)" % '|'.join([re.escape(k) for k in keywords]))
+    keyword_re = make_keyword_re(keywords)
     kw2sha = {}
 
     def replace_keyword(m):
