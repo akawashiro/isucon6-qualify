@@ -16,6 +16,7 @@ static_folder = pathlib.Path(__file__).resolve().parent.parent / 'public'
 app = Flask(__name__, static_folder=str(static_folder), static_url_path='')
 
 app.secret_key = 'tonymoris'
+keywords_cache = None
 
 
 # app.logger.critical('this is a CRITICAL message')
@@ -162,6 +163,7 @@ def create_keyword():
     keyword = request.form['keyword']
     if keyword is None or len(keyword) == 0:
         abort(400)
+    keywords_cache.add(keyword)
 
     user_id = request.user_id
     description = request.form['description']
@@ -258,6 +260,8 @@ def get_keyword(keyword):
 def delete_keyword(keyword):
     if keyword == '':
         abort(400)
+    if keyword in keywords_cache:
+        keywords_cache.remove(keyword)
 
     cur = dbh_isuda().cursor()
     cur.execute('SELECT * FROM entry WHERE keyword = %s', (keyword, ))
@@ -271,9 +275,14 @@ def delete_keyword(keyword):
 
 
 def make_keyword_list():
+    global keywords_cache
+    if keywords_cache is not None:
+        return list(keywords_cache)
+
     cur = dbh_isuda().cursor()
     cur.execute('SELECT * FROM entry ORDER BY CHARACTER_LENGTH(keyword) DESC')
     keywords = cur.fetchall()
+    keywords_cache = set(keywords)
     return keywords
 
 
