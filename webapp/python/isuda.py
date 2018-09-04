@@ -288,6 +288,5 @@ def is_spam_contents(content):
 
 
 if __name__ == "__main__":
-    with open('/home/isucon/isuda-out.txt', mode='a') as f:
-        print("Init isuda.", file=f)
+    app.logger.critical('this is a CRITICAL message')
     app.run()
