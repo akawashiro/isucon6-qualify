@@ -122,6 +122,8 @@ def authenticate(func):
 
 @app.route('/initialize')
 def get_initialize():
+    global keywords_cache
+    keywords_cache = None
     cur = dbh_isuda().cursor()
     cur.execute('DELETE FROM entry WHERE id > 7101')
     origin = config('isutar_origin')
@@ -267,7 +269,7 @@ def delete_keyword(keyword):
         keywords_cache.remove(keyword)
 
     cur = dbh_isuda().cursor()
-    cur.execute('SELECT * FROM entry WHERE keyword = %s', (keyword, ))
+    cur.execute('SELECT keyword FROM entry WHERE keyword = %s', (keyword, ))
     row = cur.fetchone()
     if row is None:
         abort(404)
@@ -326,7 +328,6 @@ def get_stars(keyword):
 
 def load_stars(keyword):
     cur = dbh_isutar().cursor()
-    # app.logger.critical('keyword = ' + keyword)
     cur.execute('SELECT * FROM star WHERE keyword = %s', (keyword, ))
     res = cur.fetchall()
     return res
