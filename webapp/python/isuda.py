@@ -270,13 +270,21 @@ def delete_keyword(keyword):
     return redirect('/')
 
 
+def make_keyword_list():
+    cur = dbh_isuda().cursor()
+    cur.execute('SELECT * FROM entry ORDER BY CHARACTER_LENGTH(keyword) DESC')
+    keywords = cur.fetchall()
+    return keywords
+
+
 def htmlify(content):
     if content is None or content == '':
         return ''
 
-    cur = dbh_isuda().cursor()
-    cur.execute('SELECT * FROM entry ORDER BY CHARACTER_LENGTH(keyword) DESC')
-    keywords = cur.fetchall()
+    # cur = dbh_isuda().cursor()
+    # cur.execute('SELECT * FROM entry ORDER BY CHARACTER_LENGTH(keyword) DESC')
+    # keywords = cur.fetchall()
+    keywords = make_keyword_list()
     keyword_re = re.compile("(%s)" % '|'.join([re.escape(k['keyword']) for k in keywords]))
     kw2sha = {}
 
