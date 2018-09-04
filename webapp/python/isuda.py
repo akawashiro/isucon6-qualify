@@ -298,11 +298,13 @@ def get_stars(keyword):
     cur = dbh_isutar().cursor()
     app.logger.critical('keyword = ' + keyword)
     cur.execute('SELECT * FROM star WHERE keyword = %s', (keyword, ))
-    return jsonify(stars=cur.fetchall())
+    res = cur.fetchall()
+    return res
+    # return jsonify(stars=cur.fetchall())
 
 
 def load_stars(keyword):
-    # res = get_stars(keyword)
+    return get_stars(keyword)
     # data = json.loads(res.read().decode('utf-8'))
     # return data['stars']
 
