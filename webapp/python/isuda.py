@@ -124,7 +124,10 @@ def authenticate(func):
 @app.route('/initialize')
 def get_initialize():
     global keywords_cache
+    global keyword_re_cache
     keywords_cache = None
+    keyword_re_cache = None
+
     cur = dbh_isuda().cursor()
     cur.execute('DELETE FROM entry WHERE id > 7101')
     origin = config('isutar_origin')
@@ -164,11 +167,13 @@ def get_robot_txt():
 @authenticate
 def create_keyword():
     global keywords_cache
+    global keyword_re_cache
     keyword = request.form['keyword']
     if keyword is None or len(keyword) == 0:
         abort(400)
     if keywords_cache is not None:
         keywords_cache.add(keyword)
+    keyword_re_cache = None
 
     user_id = request.user_id
     description = request.form['description']
@@ -264,10 +269,12 @@ def get_keyword(keyword):
 @authenticate
 def delete_keyword(keyword):
     global keywords_cache
+    global keyword_re_cache
     if keyword == '':
         abort(400)
     if keywords_cache is not None and keyword in keywords_cache:
         keywords_cache.remove(keyword)
+    keyword_re_cache = None
 
     cur = dbh_isuda().cursor()
     cur.execute('SELECT keyword FROM entry WHERE keyword = %s', (keyword, ))
