@@ -283,7 +283,7 @@ def make_keyword_list():
         return list(keywords_cache).sort(key=lambda x: len(x))
 
     cur = dbh_isuda().cursor()
-    cur.execute('SELECT * FROM entry ORDER BY CHARACTER_LENGTH(keyword) DESC')
+    cur.execute('SELECT keyword FROM entry ORDER BY CHARACTER_LENGTH(keyword) DESC')
     keywords = list()
     for k in cur.fetchall():
         keywords.append(k['keyword'])
