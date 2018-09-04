@@ -281,7 +281,9 @@ def make_keyword_list():
 
     cur = dbh_isuda().cursor()
     cur.execute('SELECT * FROM entry ORDER BY CHARACTER_LENGTH(keyword) DESC')
-    keywords = cur.fetchall()
+    keywords = list()
+    for k in cur.fetchall():
+        keywords.append(k['keyword'])
     keywords_cache = set(keywords)
     return keywords
 
@@ -294,7 +296,7 @@ def htmlify(content):
     # cur.execute('SELECT * FROM entry ORDER BY CHARACTER_LENGTH(keyword) DESC')
     # keywords = cur.fetchall()
     keywords = make_keyword_list()
-    keyword_re = re.compile("(%s)" % '|'.join([re.escape(k['keyword']) for k in keywords]))
+    keyword_re = re.compile("(%s)" % '|'.join([re.escape(k) for k in keywords]))
     kw2sha = {}
 
     def replace_keyword(m):
