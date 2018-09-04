@@ -18,7 +18,7 @@ app = Flask(__name__, static_folder=str(static_folder), static_url_path='')
 app.secret_key = 'tonymoris'
 
 
-app.logger.critical('this is a CRITICAL message')
+# app.logger.critical('this is a CRITICAL message')
 
 
 _config = {
@@ -48,6 +48,26 @@ def dbh_isuda():
             'user': config('db_user'),
             'passwd': config('db_password'),
             'db': 'isuda',
+            'charset': 'utf8mb4',
+            'cursorclass': MySQLdb.cursors.DictCursor,
+            'autocommit': True,
+        })
+        cur = request.db.cursor()
+        cur.execute("SET SESSION sql_mode='TRADITIONAL,NO_AUTO_VALUE_ON_ZERO,ONLY_FULL_GROUP_BY'")
+        cur.execute('SET NAMES utf8mb4')
+        return request.db
+
+
+def dbh_isutar():
+    if hasattr(request, 'db'):
+        return request.db
+    else:
+        request.db = MySQLdb.connect(**{
+            'host': os.environ.get('ISUTAR_DB_HOST', 'localhost'),
+            'port': int(os.environ.get('ISUTAR_DB_PORT', '3306')),
+            'user': os.environ.get('ISUTAR_DB_USER', 'root'),
+            'passwd': os.environ.get('ISUTAR_DB_PASSWORD', ''),
+            'db': 'isutar',
             'charset': 'utf8mb4',
             'cursorclass': MySQLdb.cursors.DictCursor,
             'autocommit': True,
@@ -274,7 +294,17 @@ def htmlify(content):
     return re.sub(re.compile("\n"), "<br />", result)
 
 
+def get_stars(keyword):
+    cur = dbh_isutar().cursor()
+    cur.execute('SELECT * FROM star WHERE keyword = %s', (keyword, ))
+    return jsonify(stars=cur.fetchall())
+
+
 def load_stars(keyword):
+    data = get_stars(keyword)
+    data = json.loads(data)
+    return data['stars']
+
     origin = config('isutar_origin')
     url = "%s/stars" % origin
     params = urllib.parse.urlencode({'keyword': keyword})
