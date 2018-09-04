@@ -302,9 +302,9 @@ def get_stars(keyword):
 
 
 def load_stars(keyword):
-    res = get_stars(keyword)
-    data = json.loads(res.read().decode('utf-8'))
-    return data['stars']
+    # res = get_stars(keyword)
+    # data = json.loads(res.read().decode('utf-8'))
+    # return data['stars']
 
     origin = config('isutar_origin')
     url = "%s/stars" % origin
